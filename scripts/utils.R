@@ -6,8 +6,10 @@ if (!require("pacman")) install.packages("pacman")
 #'@export
 loadPackages <- function(){
   #library(datasets)
-  pacman::p_load(pacman, here, psych) 
+  pacman::p_load(pacman, here, psych, outForest, RRF, e1071) 
   source(here::here('scripts', 'fileProcessing.R'))
+  source(here::here('scripts', 'svm.R'))
+  source(here::here('scripts', 'forest.R'))
 }
 
 #'Czyści konsolę
@@ -23,10 +25,16 @@ clear <- function(){
 #'@param clearConsole czy czyścić konsolę
 #'
 #'@export
-terminate<- function(clearConsole=TRUE){
+terminate<- function(clearConsole=TRUE, restart=FALSE){
   p_unload(all)
   rm(list = ls(envir = .GlobalEnv), envir = .GlobalEnv ) 
   env <- foreach:::.foreachGlobals
   rm(list=ls(name=env), pos=env)
-  cat("\014")
+  if(clearConsole){
+    cat("\014")
+  }
+  if(restart){
+    .rs.restartR()
+  }
+  
 }
