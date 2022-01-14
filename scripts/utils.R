@@ -60,6 +60,10 @@ terminate<- function(clearConsole=TRUE, restart=FALSE){
   cat("\014")
 }
 
+divideDataset <- function(dataSet){
+  testIndexes <- which(folds == i, arr.ind = TRUE)
+}
+
 kfold_cv <- function(dataSet, i, n) {
   dataSet <- dataSet[sample(nrow(dataSet)), ]
   
