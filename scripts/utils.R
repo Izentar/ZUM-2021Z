@@ -6,11 +6,11 @@ if (!require("pacman"))
 #'@export
 loadPackages <- function() {
   #library(datasets)
-  pacman::p_load(pacman, here, psych, dplyr, ggplot2, caret, smotefamily, RRF,  pROC, datasets, PRROC)
+  pacman::p_load(pacman, here, psych, dplyr, ggplot2, caret, smotefamily, RRF,  pROC, datasets, PRROC, ROSE)
   source(here::here('scripts', 'fileProcessing.R'))
   source(here::here('scripts', 'runRRF.R'))
   source(here::here('scripts', 'plots.R'))
-  source(here::here('scripts', 'outForest.R'))
+  #source(here::here('scripts', 'outForest.R'))
 }
 
 
@@ -27,10 +27,18 @@ clear <- function() {
 #'@param clearConsole czy czyścić konsolę
 #'
 #'@export
-terminate <- function(clearConsole = TRUE) {
+terminate <- function(clearConsole = TRUE, restart=FALSE) {
   p_unload(all)
   rm(list = ls(envir = .GlobalEnv), envir = .GlobalEnv)
   env <- foreach:::.foreachGlobals
+  rm(list=ls(name=env), pos=env)
+  if(clearConsole){
+    cat("\014")
+  }
+  if(restart){
+    .rs.restartR()
+  }
+  
   rm(list = ls(name = env), pos = env)
   cat("\014")
 }
