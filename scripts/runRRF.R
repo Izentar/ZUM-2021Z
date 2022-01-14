@@ -1,10 +1,11 @@
 runRRF <- function(dataSet) {
   N <- 5
-  folds <- randomize_kfold(dataSet, N)
+  tmp <- randomize_kfold(dataSet, N)
+  randData <- tmp[[1]]
+  folds <- tmp[[2]]
   #ntree
   for (i in 1:N) {
-    data <- kfold_cv(folds, i)
-    print(data)
+    data <- kfold_cv(folds, randData, i)
     testData <- data[[1]]
     testData$Class <- as.factor(testData$Class)
     trainData <- data[[2]]
@@ -13,6 +14,7 @@ runRRF <- function(dataSet) {
     for (ntree in seq(10, 300, by = 50)) {
       myclassifier_rrf <- RRF(Class ~ ., data = trainData, ntree = ntree)
       prediction_rrf <- predict(myclassifier_rrf, testData[,-31])
+      #print(prediction_rrf)
       ROC <-
         roc(prediction_rrf, factor(testData$Class, ordered = TRUE))
       #print(confusionMatrix(as.factor(prediction_rrf), as.factor(testData$Class)))

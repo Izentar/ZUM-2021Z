@@ -38,18 +38,15 @@ terminate <- function(clearConsole = TRUE, restart=FALSE) {
   if(restart){
     .rs.restartR()
   }
-  
-  rm(list = ls(name = env), pos = env)
-  cat("\014")
 }
 
 randomize_kfold <- function (dataSet, N) {
-  dataSet <- dataSet[sample(nrow(dataSet)), ]
+  dataTmp <- dataSet[sample(nrow(dataSet)), ]
   
-  cut(seq(1, nrow(dataSet)), breaks = N, labels = FALSE)
+  list(dataTmp, cut(seq(1, nrow(dataTmp)), breaks = N, labels = FALSE))
 }
 
-kfold_cv <- function(folds, i) {
+kfold_cv <- function(folds, dataSet, i) {
   testIndexes <- which(folds == i, arr.ind = TRUE)
   testData <- dataSet[testIndexes,]
   trainData <- dataSet[-testIndexes,]
