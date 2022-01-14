@@ -34,4 +34,14 @@ getSummary("out.csv", dataSet)
 svm <- newSVMOne(x=x, y=y, gamma=0.5, nu=0.5)
 # rpusvm(Class ~ ., data=dataSet, type='one-classification', kernel='radial', gamma=0.5, nu=0.5)
 
+library(devtools)
+devtools::install_github("h2oai/h2o4gpu", subdir = "src/interface_r")
+
+
+getSummary("out.csv", dataSet)
+# summary(dataSet)
+
+terminate(FALSE)
+
+#clear()
 clear()
