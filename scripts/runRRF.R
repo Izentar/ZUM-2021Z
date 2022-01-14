@@ -1,9 +1,10 @@
 runRRF <- function(dataSet) {
-  N = 5
-  
+  N <- 5
+  folds <- randomize_kfold(dataSet, N)
   #ntree
   for (i in 1:N) {
-    data <- kfold_cv(dataSet, i, N)
+    data <- kfold_cv(folds, i)
+    print(data)
     testData <- data[[1]]
     testData$Class <- as.factor(testData$Class)
     trainData <- data[[2]]
@@ -14,7 +15,7 @@ runRRF <- function(dataSet) {
       prediction_rrf <- predict(myclassifier_rrf, testData[,-31])
       ROC <-
         roc(prediction_rrf, factor(testData$Class, ordered = TRUE))
-      confusionMatrix(as.factor(prediction_rrf), as.factor(testData$Class))
+      #print(confusionMatrix(as.factor(prediction_rrf), as.factor(testData$Class)))
       auc <- auc(ROC)
       plot(
         ROC,
@@ -27,10 +28,12 @@ runRRF <- function(dataSet) {
     
   }
   
+  stop("STOP") 
+  
   
   #mtry
   for (i in 1:N) {
-    data <- kfold_cv(dataSet, i, N)
+    data <- kfold_cv(folds, i)
     testData <- data[[1]]
     testData$Class <- as.factor(testData$Class)
     trainData <- data[[2]]
@@ -56,7 +59,7 @@ runRRF <- function(dataSet) {
   
   #maxnodes
   for (i in 1:N) {
-    data <- kfold_cv(dataSet, i, N)
+    data <- kfold_cv(folds, i)
     testData <- data[[1]]
     testData$Class <- as.factor(testData$Class)
     trainData <- data[[2]]
@@ -87,7 +90,7 @@ runRRF <- function(dataSet) {
   
   #MIX
   for (i in 1:N) {
-    data <- kfold_cv(dataSet, i, N)
+    data <- kfold_cv(folds, i)
     testData <- data[[1]]
     testData$Class <- as.factor(testData$Class)
     trainData <- data[[2]]

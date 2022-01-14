@@ -1,20 +1,3 @@
-install.packages("caret")
-install.packages("smotefamily")
-install.packages("RRF")
-install.packages("pROC")
-install.packages("ROSE")
-install.packages("ggplot2")
-install.packages("dplyr")
-install.packages("PRROC")
-
-library(dplyr)
-library(ggplot2)
-library(caret)
-library(smotefamily)
-library(RRF)
-library(pROC)
-library(datasets)
-library(PRROC)
 if (!require("pacman"))
   install.packages("pacman")
 
@@ -23,7 +6,7 @@ if (!require("pacman"))
 #'@export
 loadPackages <- function() {
   #library(datasets)
-  pacman::p_load(pacman, here, psych)
+  pacman::p_load(pacman, here, psych, dplyr, ggplot2, caret, smotefamily, RRF,  pROC, datasets, PRROC)
   source(here::here('scripts', 'fileProcessing.R'))
   source(here::here('scripts', 'runRRF.R'))
   source(here::here('scripts', 'plots.R'))
@@ -52,10 +35,13 @@ terminate <- function(clearConsole = TRUE) {
   cat("\014")
 }
 
-kfold_cv <- function(dataSet, i, n) {
+randomize_kfold <- function (dataSet, N) {
   dataSet <- dataSet[sample(nrow(dataSet)), ]
   
-  folds <- cut(seq(1, nrow(dataSet)), breaks = n, labels = FALSE)
+  cut(seq(1, nrow(dataSet)), breaks = N, labels = FALSE)
+}
+
+kfold_cv <- function(folds, i) {
   testIndexes <- which(folds == i, arr.ind = TRUE)
   testData <- dataSet[testIndexes,]
   trainData <- dataSet[-testIndexes,]
