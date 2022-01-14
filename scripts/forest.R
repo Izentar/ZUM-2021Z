@@ -8,7 +8,6 @@ newRandomForest <- function(x, y, ntree, mtry){
 }
 
 
-
 # outForest
 newOutForest <- function(x, y, ntree, mtry){
   return(outForest(x=x, y=y, num.trees=ntree, num.mtry=mtry))
