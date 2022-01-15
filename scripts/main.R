@@ -1,12 +1,11 @@
-
-
 source(here::here('scripts', 'utils.R'))
 loadPackages()
 
 set.seed(93274)
 quit()
 
-dataSet <- prepareData()
+dataSet <- prepareData(TRUE)
+
 
 data(iris)
 attach(iris)
@@ -19,20 +18,21 @@ help("~")
 print(Species ~ .)
 typeof(Species ~ .)
 
+#run_plots(dataSet, "_unbalanced")
 
-run_plots(dataSet, "_unbalanced")
-dataSet <-  SMOTE(dataSet[, -31], dataSet$Class, K = 5)$data
-names(dataSet)[names(dataSet) == 'class'] <- 'Class'
+dataSet <-  smotefamily::SMOTE(dataSet[, -31], dataSet$Class, K = 5)$data
+ names(dataSet)[names(dataSet) == 'class'] <- 'Class'
 
-run_plots(dataSet, "_balanced")
+#run_plots(dataSet, "_balanced")
 runRRF(dataSet)
 
 getSummary("out.csv", dataSet)
 # summary(dataSet)
 
 #svm <- newSVMOne(x=dataSet, y=unlist(labels(dataSet)[2]), gamma=0.5, nu=0.5)
-svm <- newSVMOne(x=x, y=y, gamma=0.5, nu=0.5)
+#svm <- newSVMOne(x=x, y=y, gamma=0.5, nu=0.5)
 # rpusvm(Class ~ ., data=dataSet, type='one-classification', kernel='radial', gamma=0.5, nu=0.5)
+terminate(FALSE, TRUE)
 
 library(devtools)
 devtools::install_github("h2oai/h2o4gpu", subdir = "src/interface_r")
@@ -45,3 +45,8 @@ terminate(FALSE)
 
 #clear()
 clear()
+
+
+data
+data[data$class == 'owoc']
+print(data$class == 'owoc')

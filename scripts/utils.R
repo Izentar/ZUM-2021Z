@@ -1,20 +1,3 @@
-install.packages("caret")
-install.packages("smotefamily")
-install.packages("RRF")
-install.packages("pROC")
-install.packages("ROSE")
-install.packages("ggplot2")
-install.packages("dplyr")
-install.packages("PRROC")
-
-library(dplyr)
-library(ggplot2)
-library(caret)
-library(smotefamily)
-library(RRF)
-library(pROC)
-library(datasets)
-library(PRROC)
 if (!require("pacman"))
   install.packages("pacman")
 
@@ -23,11 +6,11 @@ if (!require("pacman"))
 #'@export
 loadPackages <- function() {
   #library(datasets)
-  pacman::p_load(pacman, here, psych)
+  pacman::p_load(pacman, here, psych, dplyr, ggplot2, caret, smotefamily, RRF,  pROC, datasets, PRROC, ROSE)
   source(here::here('scripts', 'fileProcessing.R'))
   source(here::here('scripts', 'runRRF.R'))
   source(here::here('scripts', 'plots.R'))
-  source(here::here('scripts', 'outForest.R'))
+  #source(here::here('scripts', 'outForest.R'))
 }
 
 
@@ -44,7 +27,7 @@ clear <- function() {
 #'@param clearConsole czy czyścić konsolę
 #'
 #'@export
-terminate<- function(clearConsole=TRUE, restart=FALSE){
+terminate <- function(clearConsole = TRUE, restart=FALSE) {
   p_unload(all)
   rm(list = ls(envir = .GlobalEnv), envir = .GlobalEnv)
   env <- foreach:::.foreachGlobals
@@ -55,9 +38,6 @@ terminate<- function(clearConsole=TRUE, restart=FALSE){
   if(restart){
     .rs.restartR()
   }
-  
-  rm(list = ls(name = env), pos = env)
-  cat("\014")
 }
 
 divideDataset <- function(dataSet, randSample = TRUE){
@@ -69,11 +49,13 @@ divideDataset <- function(dataSet, randSample = TRUE){
   return(zero, one)
 }
 
-
-kfold_cv <- function(dataSet, i, n) {
-  dataSet <- dataSet[sample(nrow(dataSet)), ]
+randomize_kfold <- function (dataSet, N) {
+  dataTmp <- dataSet[sample(nrow(dataSet)), ]
   
-  folds <- cut(seq(1, nrow(dataSet)), breaks = n, labels = FALSE)
+  list(dataTmp, cut(seq(1, nrow(dataTmp)), breaks = N, labels = FALSE))
+}
+
+kfold_cv <- function(folds, dataSet, i) {
   testIndexes <- which(folds == i, arr.ind = TRUE)
   testData <- dataSet[testIndexes,]
   trainData <- dataSet[-testIndexes,]
