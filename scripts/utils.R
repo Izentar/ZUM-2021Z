@@ -60,9 +60,15 @@ terminate<- function(clearConsole=TRUE, restart=FALSE){
   cat("\014")
 }
 
-divideDataset <- function(dataSet){
-  testIndexes <- which(folds == i, arr.ind = TRUE)
+divideDataset <- function(dataSet, randSample = TRUE){
+  zero <- dataSet[dataSet$Class == 0]
+  zero <- zero[sample(nrow(zero)), ]
+  one <- dataSet[dataSet$Class == 1]
+  one <- one[sample(nrow(one)), ]
+
+  return(zero, one)
 }
+
 
 kfold_cv <- function(dataSet, i, n) {
   dataSet <- dataSet[sample(nrow(dataSet)), ]
@@ -72,7 +78,7 @@ kfold_cv <- function(dataSet, i, n) {
   testData <- dataSet[testIndexes,]
   trainData <- dataSet[-testIndexes,]
   
-  list(testData, trainData)
+  return(list(testData, trainData))
 }
 
 plot_AUPRC <- function(testData, predicted, title) {
@@ -81,5 +87,5 @@ plot_AUPRC <- function(testData, predicted, title) {
   pr <- pr.curve(scores.class0 = fg,
                  scores.class1 = bg,
                  curve = T)
-  plot(pr, main = title)
+  return(plot(pr, main = title))
 }
