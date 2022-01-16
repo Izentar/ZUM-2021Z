@@ -4,22 +4,22 @@ pacman::p_load(pacman)
 prepareData <- function(example = FALSE) {
   dataset <- NULL
   if (example) {
-    dataset <- read.table("data/mbb.csv", header = TRUE, sep = ",")
+    dataset <- read.table("data/creditcardshort.txt", header = TRUE, sep = ",")
   }
   else{
-    dataset <- read.table("data/creditcardshort.txt", header = TRUE, sep = ",")
+    dataset <- read.table("data/creditcard.txt", header = TRUE, sep = ",")
   }
   #head(dataset)
   
   return(dataset)
 }
 
-
-getSummary <- function(fileName, dataSet, ignore = list()) {
+# przykładowa funkcja, która pokazuje jak się zapisuje rzeczy do pliku
+getSummary <- function(fileName, dataSet, ignore = list(), toInteger = list('Class')) {
   output <- file(description = fileName, open = "w") # wa - write append
   
   write("Head\n", file = output, append = TRUE)
-  write.table(dataSet[1:6,],
+  write.table(dataSet[1:nrow(dataSet),],
               file = output,
               sep = ",",
               row.names = FALSE)
@@ -44,7 +44,11 @@ getSummary <- function(fileName, dataSet, ignore = list()) {
       append = TRUE
     )
     if (!(column %in% ignore)) {
-      d <- as.data.frame(describe(dataSet[[column]]))
+      c <- dataSet[[column]]
+      if(column %in% toInteger){
+        c <- as.integer(c)
+      }
+      d <- as.data.frame(describe(c))
       write.csv(d, file = output, row.names = FALSE)
     }
   }

@@ -6,10 +6,11 @@ if (!require("pacman"))
 #'@export
 loadPackages <- function() {
   #library(datasets)
-  pacman::p_load(pacman, here, psych, dplyr, ggplot2, caret, smotefamily, RRF,  pROC, datasets, PRROC, ROSE)
+  pacman::p_load(pacman, here, psych, dplyr, ggplot2, caret, smotefamily, RRF,  pROC, datasets, PRROC, ROSE, e1071)
   source(here::here('scripts', 'fileProcessing.R'))
   source(here::here('scripts', 'runRRF.R'))
   source(here::here('scripts', 'plots.R'))
+  source(here::here('scripts', 'svm.R'))
   #source(here::here('scripts', 'outForest.R'))
 }
 
@@ -41,12 +42,25 @@ terminate <- function(clearConsole = TRUE, restart=FALSE) {
 }
 
 divideDataset <- function(dataSet, randSample = TRUE){
-  zero <- dataSet[dataSet$Class == 0]
+  zero <- dataSet[dataSet$Class == "0", ]
   zero <- zero[sample(nrow(zero)), ]
-  one <- dataSet[dataSet$Class == 1]
+  one <- dataSet[dataSet$Class == "1", ]
   one <- one[sample(nrow(one)), ]
 
-  return(zero, one)
+  return(list(zero, one))
+}
+
+sampleDataset <- function(dataSet, N){
+  tmp <- dataSet[sample(nrow(dataSet)), ]
+  return(tmp[1:N, ])
+}
+
+concatenateDatasets <- function(d1, d2){
+  return(rbind(d1, d2))
+}
+
+compareDatasets <- function(d1, d2){
+  return(setdiff(d1, d2))
 }
 
 randomize_kfold <- function (dataSet, N) {
@@ -70,4 +84,31 @@ plot_AUPRC <- function(testData, predicted, title) {
                  scores.class1 = bg,
                  curve = T)
   return(plot(pr, main = title))
+}
+
+
+
+getROC <- function(dataUsedInPred, prediction){
+  return(roc(prediction, factor(dataUsedInPred$Class, ordered = TRUE)))
+}
+
+getFolderPath <- function(folderNames, fileIndex){
+  foName <- 'default'
+  if(length(folderNames) <= fileIndex){
+    return(paste(foName, '_', as.character(fileIndex), sep=""))
+  }
+  else{
+    return(folderNames[[fileIndex]])
+  }
+}
+
+osGetPathSlash <- function(){
+  name <- Sys.info()['sysname']
+  if(name == "Linux"){
+    return('/')
+  }
+  else if(name == "Windows"){
+    return('\\')
+  }
+  stop("Unknown operating system detected. Use Linux or Windows.")
 }
