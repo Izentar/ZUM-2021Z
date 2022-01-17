@@ -36,7 +36,7 @@ getSummary("out.csv", dataSet)
 # summary(dataSet)
 
 tmp <- 
-experimentSVM(dataSet, newSVMTwoC, folderName='outTest', gamma=list(0.5, 0.6), nu=list(0.2))
+experimentSVM(dataSet, newSVMTwoC, folderName='outTest', gamma=list(0.5, 0.6), nu=list(0.15))
 
 #svm <- newSVMOneC(x=dataSet, y=unlist(labels(dataSet)[2]), gamma=0.5, nu=0.5)
 #svm <- newSVMOneC(dataSet, gamma=0.5, nu=0.5)

@@ -23,9 +23,13 @@ newSVMTwoC <- function(data, gamma, nu){
   return(svm(Class ~ ., data = data, type='nu-classification', kernel='radial', gamma=gamma, nu=nu))
 }
 
-getSVMFileName <- function(path, prefixName, idx, g, n, suffixName){
+getSVMFileName <- function(path, prefixName, idx = NULL, g, n, suffixName){
+  if(is.null(idx)){
+    return(paste(path, osGetPathSlash(), prefixName, 
+    "gamma_", as.character(g), "_" , "nu_", as.character(n), suffixName, sep = ""))
+  }
   return(paste(path, osGetPathSlash(), prefixName, "idx_", as.character(idx), 
-    "gamma_", as.character(g), "_" , "nu_", as.character(n), ".png", sep = ""))
+    "gamma_", as.character(g), "_" , "nu_", as.character(n), suffixName, sep = ""))
 }
 
 getSVMFolderName <- function(path, g, n){
@@ -52,6 +56,8 @@ experimentSVM <- function(dataset, svmObj, folderName, N=5, gamma = list(), nu =
       folds <- tmp[[2]]
 
       newfoName <- getSVMFolderName(foName, g, n)
+      dir.create(file.path(newfoName), recursive = TRUE, showWarnings=FALSE)
+      output <- file(description = getSVMFileName(newfoName, "result", idx = NULL, g, n, ".txt"), open = "w") # wa - write append
 
       for(idx in N){
         fetchedData <- kfold_cv(folds, randData, idx)
@@ -61,21 +67,49 @@ experimentSVM <- function(dataset, svmObj, folderName, N=5, gamma = list(), nu =
         # create SVM
         svmPedictor <- svmObj(trainD, g, n)
         prediction <- predict(svmPedictor, testD)
-
-        # musi być tutaj, bo inaczej stworzą się puste foldery, gdy SVM nie da sobie rady
-        dir.create(file.path(newfoName), recursive = TRUE, showWarnings=FALSE)
+        rocObj <- getROC(testD, prediction)
 
         png(getSVMFileName(newfoName, "roc_", idx, g, n, ".png"))
         plot(
-          getROC(testD, prediction),
+          rocObj,
           col = "#619e39",
           lwd = 3,
           main = paste("SVM ", "gamma: ", g, "nu: ", n)
         )
         dev.off()
-        
-        
+
+        matrix <- (confusionMatrix(as.factor(prediction), as.factor(testD$Class)))
+        matrix1 <- as.table(matrix)
+        matrix2 <- as.table(matrix, what="overall")
+        matrix3 <- as.table(matrix, what="classes")
+        print(matrix)
+        stop("STOP")
+        writeString(output, "confusion matrix:\n")
+        writeTable(output, matrix)
+        writeString(output, "\n\n")
+
+        svmPrecision <- precision(as.factor(prediction), as.factor(testD$Class))
+        writeString(output, "precision:\n")
+        writeString(output, vector(svmPrecision))
+        writeString(output, "\n\n")
+
+        svmRecall <- recall(as.factor(prediction), as.factor(testD$Class))
+        writeString(output, "recall:\n")
+        writeString(output, vector(svmRecall))
+        writeString(output, "\n\n")
+
+        f1_score <- (svmPrecision * svmRecall) / (svmPrecision + svmRecall)
+        writeString(output, "f1 score:\n")
+        writeString(output, vector(f1_score))
+        writeString(output, "\n\n")
+
+        aucScore <- auc(rocObj)
+        writeString(output, "AUC:\n")
+        writeString(output, vector(aucScore))
+        writeString(output, "\n\n")
+
       }
+      close(output)
     }
   }
   

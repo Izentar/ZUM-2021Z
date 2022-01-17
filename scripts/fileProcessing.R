@@ -4,7 +4,7 @@ pacman::p_load(pacman)
 prepareData <- function(example = FALSE) {
   dataset <- NULL
   if (example) {
-    dataset <- read.table("data/creditcardshort.txt", header = TRUE, sep = ",")
+    dataset <- read.table("data/creditcardtest.txt", header = TRUE, sep = ",")
   }
   else{
     dataset <- read.table("data/creditcard.txt", header = TRUE, sep = ",")
@@ -14,12 +14,23 @@ prepareData <- function(example = FALSE) {
   return(dataset)
 }
 
+writeString <- function(fileHandler, string){
+  write(string, file = fileHandler, append = TRUE)
+}
+
+writeTable <- function(fileHandler, dataSet, ignore = list(), toInteger = list('Class')){
+  write.table(as.data.frame(dataSet[seq_len(dataSet), ]),
+    file = fileHandler,
+    sep = ",",
+    row.names = FALSE)
+}
+
 # przykładowa funkcja, która pokazuje jak się zapisuje rzeczy do pliku
 getSummary <- function(fileName, dataSet, ignore = list(), toInteger = list('Class')) {
   output <- file(description = fileName, open = "w") # wa - write append
   
   write("Head\n", file = output, append = TRUE)
-  write.table(dataSet[1:nrow(dataSet),],
+  write.table(dataSet[seq_len(dataSet),],
               file = output,
               sep = ",",
               row.names = FALSE)
