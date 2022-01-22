@@ -6,12 +6,12 @@ if (!require("pacman"))
 #'@export
 loadPackages <- function() {
   #library(datasets)
-  pacman::p_load(pacman, here, psych, dplyr, ggplot2, caret, smotefamily, RRF,  pROC, datasets, PRROC, ROSE, e1071, caret)
+  pacman::p_load(pacman, here, psych, dplyr, ggplot2, caret, smotefamily, RRF,  outForest, pROC, datasets, PRROC, ROSE, e1071, caret)
   source(here::here('scripts', 'fileProcessing.R'))
   source(here::here('scripts', 'runRRF.R'))
   source(here::here('scripts', 'plots.R'))
   source(here::here('scripts', 'svm.R'))
-  #source(here::here('scripts', 'outForest.R'))
+  source(here::here('scripts', 'outForest.R'))
 }
 
 
