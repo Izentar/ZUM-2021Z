@@ -23,12 +23,12 @@ newSVMTwoC <- function(data, gamma, nu){
   return(svm(Class ~ ., data = data, type='nu-classification', kernel='radial', gamma=gamma, nu=nu))
 }
 
-getSVMFileName <- function(path, prefixName, idx = NULL, g, n, suffixName){
+generateFileName <- function(path, prefixName, idx = NULL, g, n, suffixName){
   if(is.null(idx)){
-    return(paste(path, osGetPathSlash(), prefixName, 
+    return(paste(path, osGetPathSlash(), prefixName, '_',
     "gamma_", as.character(g), "_" , "nu_", as.character(n), suffixName, sep = ""))
   }
-  return(paste(path, osGetPathSlash(), prefixName, "idx_", as.character(idx), 
+  return(paste(path, osGetPathSlash(), prefixName, '_', "idx_", as.character(idx), 
     "gamma_", as.character(g), "_" , "nu_", as.character(n), suffixName, sep = ""))
 }
 
@@ -57,7 +57,8 @@ experimentSVM <- function(dataset, svmObj, folderName, N=5, gamma = list(), nu =
 
       newfoName <- getSVMFolderName(foName, g, n)
       dir.create(file.path(newfoName), recursive = TRUE, showWarnings=FALSE)
-      output <- file(description = getSVMFileName(newfoName, "result", idx = NULL, g, n, ".txt"), open = "w") # wa - write append
+      output <- file(description = generateFileName(newfoName, "result", idx = NULL, g, n, ".txt"), open = "w") # wa - write append
+      outputTerminal <- file(description = generateFileName(newfoName, "resultTerminal", idx = NULL, g, n, ".txt"), open = "w")
 
       for(idx in N){
         fetchedData <- kfold_cv(folds, randData, idx)
@@ -69,7 +70,7 @@ experimentSVM <- function(dataset, svmObj, folderName, N=5, gamma = list(), nu =
         prediction <- predict(svmPedictor, testD)
         rocObj <- getROC(testD, prediction)
 
-        png(getSVMFileName(newfoName, "roc_", idx, g, n, ".png"))
+        png(generateFileName(newfoName, "roc_", idx, g, n, ".png"))
         plot(
           rocObj,
           col = "#619e39",
@@ -78,38 +79,54 @@ experimentSVM <- function(dataset, svmObj, folderName, N=5, gamma = list(), nu =
         )
         dev.off()
 
+        png(generateFileName(newfoName, "AUC_PR_", idx, g, n, ".png"))
+        plot(
+          rocObj,
+          col = "#619e39",
+          lwd = 3,
+          main = paste("AUC PR ", "gamma: ", g, "nu: ", n)
+        )
+        dev.off()
+
         matrix <- (confusionMatrix(as.factor(prediction), as.factor(testD$Class)))
-        matrix1 <- as.table(matrix)
-        matrix2 <- as.table(matrix, what="overall")
-        matrix3 <- as.table(matrix, what="classes")
-        print(matrix)
-        stop("STOP")
-        writeString(output, "confusion matrix:\n")
-        writeTable(output, matrix)
-        writeString(output, "\n\n")
+        mpos <- matrix$positive
+        mtab <- t(matrix$table)
+        moverall <- t(matrix$overall)
+        mclass <- t(matrix$byClass)
+
+        writeCapturedOutput(matrix, file=outputTerminal)
+
+        writeString(output, "confusion matrix:")
+        writeString(output, paste("Positive,", toString(mpos)))
+        writeCsv(output, mtab)
+        writeCsv(output, moverall)
+        writeCsv(output, mclass)
+        writeString(output, "\n")
 
         svmPrecision <- precision(as.factor(prediction), as.factor(testD$Class))
-        writeString(output, "precision:\n")
-        writeString(output, vector(svmPrecision))
-        writeString(output, "\n\n")
+
+        writeString(output, "precision:")
+        writeString(output, toString(svmPrecision))
+        writeString(output, "\n")
 
         svmRecall <- recall(as.factor(prediction), as.factor(testD$Class))
-        writeString(output, "recall:\n")
-        writeString(output, vector(svmRecall))
-        writeString(output, "\n\n")
+        writeString(output, "recall:")
+        writeString(output, toString(svmRecall))
+        writeString(output, "\n")
 
         f1_score <- (svmPrecision * svmRecall) / (svmPrecision + svmRecall)
-        writeString(output, "f1 score:\n")
-        writeString(output, vector(f1_score))
-        writeString(output, "\n\n")
+        writeString(output, "f1 score:")
+        writeString(output, toString(f1_score))
+        writeString(output, "\n")
 
         aucScore <- auc(rocObj)
-        writeString(output, "AUC:\n")
-        writeString(output, vector(aucScore))
-        writeString(output, "\n\n")
+        writeString(output, "AUC:")
+        writeString(output, toString(aucScore))
+        writeString(output, "\n")
 
       }
       close(output)
+      close(outputTerminal)
     }
   }
   

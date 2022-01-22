@@ -14,14 +14,24 @@ prepareData <- function(example = FALSE) {
   return(dataset)
 }
 
+writeCapturedOutput <-function(fileHandler, obj){
+  capture.output(obj, file = fileHandler, append = TRUE)
+}
+
 writeString <- function(fileHandler, string){
   write(string, file = fileHandler, append = TRUE)
 }
 
 writeTable <- function(fileHandler, dataSet, ignore = list(), toInteger = list('Class')){
-  write.table(as.data.frame(dataSet[seq_len(dataSet), ]),
+  write.table(data.frame(dataSet[seq_len(dataSet), ]),
     file = fileHandler,
     sep = ",",
+    row.names = FALSE)
+}
+
+writeCsv <- function(fileHandler, dataSet, ignore = list(), toInteger = list('Class')){
+  write.csv(data.frame(dataSet),
+    file = fileHandler,
     row.names = FALSE)
 }
 
@@ -30,7 +40,7 @@ getSummary <- function(fileName, dataSet, ignore = list(), toInteger = list('Cla
   output <- file(description = fileName, open = "w") # wa - write append
   
   write("Head\n", file = output, append = TRUE)
-  write.table(dataSet[seq_len(dataSet),],
+  write.table(dataSet[seq_len(dataSet), ],
               file = output,
               sep = ",",
               row.names = FALSE)
