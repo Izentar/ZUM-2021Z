@@ -1,11 +1,9 @@
 source(here::here('scripts', 'utils.R'))
-
-
 loadPackages()
 
 set.seed(93274)
 
-dataSet <- prepareData()
+dataSet <- prepareData(TRUE)
 
 run_plots(dataSet, "_unbalanced")
 dataSet <-  SMOTE(dataSet[,-31], dataSet$Class,K = 5)$data

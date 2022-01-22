@@ -4,10 +4,10 @@ pacman::p_load(pacman)
 prepareData <- function(example = FALSE) {
   dataset <- NULL
   if (example) {
-    dataset <- read.table("data/creditcard.csv", header = TRUE, sep = ",")
+    dataset <- read.table("data/creditcardtest.txt", header = TRUE, sep = ",")
   }
   else{
-    dataset <- read.table("data/creditcardtest.txt", header = TRUE, sep = ",")
+    dataset <- read.table("data/creditcard.txt", header = TRUE, sep = ",")
   }
   #head(dataset)
   

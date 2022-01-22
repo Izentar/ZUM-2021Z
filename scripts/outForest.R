@@ -7,7 +7,7 @@ stratified_sampling <- function(proportion, rows_number, dataset) {
   one_samples <- sample_n(one, proportion * rows_number)
   zero_samples <- sample_n(zero, (1-proportion) * rows_number)
   
-  rbind(one_samples, zero_samples)
+  zero_samples
 }
 
 
@@ -19,6 +19,8 @@ runOutForest <- function(dataSet) {
   randData <- tmp[[1]]
   folds <- tmp[[2]]
   
+  #print(dataSet[dataSet$Class == "0", ])
+
   for (i in 1:N) {
     data <- kfold_cv(folds, randData, i)
     testData <- data[[1]]
@@ -27,11 +29,20 @@ runOutForest <- function(dataSet) {
     trainData$Class <- as.factor(trainData$Class)
     
     classifier <- outForest(trainData, allow_predictions=TRUE)
+    testData$V10 <- 100.0
     
     prediction <- predict(classifier, newdata  = testData)
+    print("")
+    outli <- outliers(prediction)
+    selectedByAlg <- testData[outli$row, ]
+    print(outli$row)
+    print(selectedByAlg)
+    onlyOne <- selectedByAlg[selectedByAlg$Class == "1", ]
+    print(nrow(onlyOne))
+    print(nrow(selectedByAlg))
+    stop("STOP")
+    print(outliers(prediction)$row)
     
-    head(outForest::outliers(classifier))
-
   }
   
 }
