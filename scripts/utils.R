@@ -7,7 +7,7 @@ if (!require("pacman"))
 loadPackages <- function() {
   #library(datasets)
 
-  pacman::p_load(pacman, here, psych, dplyr, ggplot2, caret, smotefamily, RRF,  outForest, pROC, datasets, PRROC, ROSE, e1071, caret)
+  pacman::p_load(pacman, here, psych, dplyr, ggplot2, caret, smotefamily, RRF,  outForest, pROC, datasets, PRROC, ROSE, e1071, caret, randomForest)
 
   source(here::here('scripts', 'fileProcessing.R'))
   source(here::here('scripts', 'runRRF.R'))

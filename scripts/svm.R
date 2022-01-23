@@ -66,6 +66,8 @@ experimentSVM <- function(dataset, svmObj, folderName, addValidDataset = NULL, N
           outputTerminal <- file(description = generateFileName(newfoName, "resultTerminal", idx = NULL, g, n, ".txt"), open = "w")
 
           for(idx in 1:N){
+            writeString(output, paste("Index for:", toString(idx)))
+
             fetchedData <- kfold_cv(folds, randData, idx)
             testD <- fetchedData[[1]]
             trainD <- fetchedData[[2]]

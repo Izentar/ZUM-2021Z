@@ -1,9 +1,9 @@
 
-stop0 = 20000
-stop1 = 10000
+stop0 = 50000
+stop1 = 100000
 whereNumber = -3
 
-with open('data/creditcard.txt', mode='r') as handle, open('data/creditcard20000.txt', mode='w') as hwrite:
+with open('data/creditcard.txt', mode='r') as handle, open('data/creditcard50000.csv', mode='w') as hwrite:
     count0 = 0
     count1 = 0
     for i, l in enumerate(handle.readlines()):
