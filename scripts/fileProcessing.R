@@ -5,14 +5,14 @@ prepareData <- function(example = FALSE, tiny = FALSE) {
   dataset <- NULL
   if (example) {
     if(tiny){
-      dataset <- read.table("data/creditcardtiny.txt", header = TRUE, sep = ",")
+      dataset <- read.table("data/creditcardtiny.csv", header = TRUE, sep = ",")
     }
     else{
-      dataset <- read.table("data/creditcardtest.txt", header = TRUE, sep = ",")
+      dataset <- read.table("data/creditcardtest.csv", header = TRUE, sep = ",")
     }
   }
   else{
-    dataset <- read.table("data/creditcard.txt", header = TRUE, sep = ",")
+    dataset <- read.table("data/creditcardCropped.csv", header = TRUE, sep = ",")
   }
   #head(dataset)
   
