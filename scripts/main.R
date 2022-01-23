@@ -13,7 +13,7 @@ set.seed(93274)
 #
 #
 
-dataSet <- prepareData(TRUE, FALSE)
+dataSet <- prepareData(FALSE, FALSE)
 
 #run_plots(dataSet, "_unbalanced")
 
