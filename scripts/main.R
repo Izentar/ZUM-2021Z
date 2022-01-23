@@ -16,7 +16,7 @@ dataSet <-  SMOTE(dataSet[,-20], dataSet$Class,K = 5)$data
 names(dataSet)[names(dataSet) == 'class'] <- 'Class'
 
 t <- divideDataset(dataSet) # 0 / 1
-ttt <- sampleDataset(t[[1]], 17000) # zmien na 10000
+ttt <- sampleDataset(t[[1]], 7500) 
 t0 <- ttt[[1]] 
 t0_2 <- ttt[[2]]
 t1 <- t[[2]]

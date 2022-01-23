@@ -12,7 +12,7 @@ prepareData <- function(example = FALSE, tiny = FALSE) {
     }
   }
   else{
-    dataset <- read.table("data/creditcard25000.csv", header = TRUE, sep = ",")
+    dataset <- read.table("data/creditcard15000.csv", header = TRUE, sep = ",")
   }
   #head(dataset)
   
