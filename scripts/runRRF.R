@@ -1,8 +1,17 @@
+
+getRRFFolder <- function(path, ntree="default", mtry="default", maxnodes="default"){
+  return(paste(path, osGetPathSlash(), "ntree_", ntree, 
+               osGetPathSlash(), "mtry_", mtry, "maxnodes_", maxnodes, osGetPathSlash(), sep=""))
+}
+
+
+
 runRRF <- function(dataSet) {
   N <- 5
   tmp <- randomize_kfold(dataSet, N)
   randData <- tmp[[1]]
   folds <- tmp[[2]]
+  foName <- "test" 
   #ntree
   for (i in 1:N) {
     data <- kfold_cv(folds, randData, i)
@@ -12,25 +21,49 @@ runRRF <- function(dataSet) {
     trainData$Class <- as.factor(trainData$Class)
     
     for (ntree in seq(10, 300, by = 50)) {
+      
+      newfoName <- getRRFFolder(foName, ntree = toString(ntree))
+      dir.create(file.path(newfoName), recursive = TRUE, showWarnings=FALSE)
+      output <- file(description = "test.txt", open = "w") # wa - write append
+      outputTerminal <- file(description = "test_terminal.txt", open = "w")
+      
       myclassifier_rrf <- RRF(Class ~ ., data = trainData, ntree = ntree)
       prediction_rrf <- predict(myclassifier_rrf, testData[,-31])
-      #print(prediction_rrf)
+      
+
       ROC <-
         roc(prediction_rrf, factor(testData$Class, ordered = TRUE))
-      #print(confusionMatrix(as.factor(prediction_rrf), as.factor(testData$Class)))
+  
+      matrix <- confusionMatrix(as.factor(prediction_rrf), as.factor(testData$Class))
+      
+      
+      writeCapturedOutput(matrix, file=outputTerminal)
+      
+      writeString(output, "confusion matrix:")
+      writeString(output, paste("Positive,", toString(mpos)))
+      writeCsv(output, mtab)
+      writeCsv(output, moverall)
+      writeCsv(output, mclass)
+      writeString(output, "\n")
+      
+      
       auc <- auc(ROC)
+      
+      png(generateFileName(newfoName, "roc", "_ntree_", ntree, ".png"))
+
       plot(
         ROC,
         col = "red",
         lwd = 3,
         main = paste("RRF ", "ntree: ", ntree, "AUC: ", auc)
       )
+      
+      dev.off()
       plot_AUPRC(testData, prediction_rrf, paste("RRF ", "ntree: ", ntree))
     }
     
   }
-  
-  stop("STOP") 
+
   
   
   #mtry
@@ -116,6 +149,7 @@ runRRF <- function(dataSet) {
           confusionMatrix(as.factor(prediction_rrf),
                           as.factor(testData$Class))
           auc <- auc(ROC)
+          print(prediction_rrf)
           plot(
             ROC,
             col = "red",
