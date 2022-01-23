@@ -7,7 +7,7 @@ loadPackages()
 set.seed(93274)
 
 
-dataSet <- prepareData(TRUE, FALSE)
+dataSet <- prepareData(FALSE, FALSE)
 run_plots(dataSet, "_unbalanced")
 
 
@@ -15,7 +15,7 @@ dataSet <-  SMOTE(dataSet[,-31], dataSet$Class,K = 5)$data
 names(dataSet)[names(dataSet) == 'class'] <- 'Class'
 
 t <- divideDataset(dataSet) # 0 / 1
-ttt <- sampleDataset(t[[1]], 2500) # zmien na 10000
+ttt <- sampleDataset(t[[1]], 10000) # zmien na 10000
 t0 <- ttt[[1]] 
 t0_2 <- ttt[[2]]
 t1 <- t[[2]]
