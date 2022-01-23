@@ -20,9 +20,15 @@ t0 <- ttt[[1]]
 t0_2 <- ttt[[2]]
 t1 <- t[[2]]
 
-control <- trainControl(method="repeatedcv", number=10, repeats=3)
-model <- train(Class~., data=dataSet, method="RRF", trControl=control)
-importance <- varImpPlot(model, scale=FALSE)
+#control <- caret::trainControl(method="repeatedcv", number=5, repeats=1)
+#model <- caret::train(Class~., data=dataSet, method="rf", trControl=control, importance = TRUE)
+library(randomForest)
+ 
+model <- randomForest(factor(Class)~., data=dataSet,  importance = TRUE)
+
+importance(model)
+varImpPlot(model)
+#importance <- randomForest::varImpPlot(model)
 
 
 run_plots(dataSet, "_unbalanced")
