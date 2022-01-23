@@ -48,85 +48,100 @@ experimentSVM <- function(dataset, svmObj, folderName, N=5, gamma = list(), nu =
   
   for (g in gamma){
     for (n in nu){ # https://stackoverflow.com/questions/26987248/nu-is-infeasible
-      # nu = 0.1 lub mniejsze powinno działać zawsze
-      # im niższe nu, tym większa jest tolerancja na błędy -> gorsze wyniki,
-      # jak predykcja całego zbioru jako fałszywego
-      tmp <- randomize_kfold(dataset, N)
-      randData <- tmp[[1]]
-      folds <- tmp[[2]]
 
-      newfoName <- getSVMFolderName(foName, g, n)
-      dir.create(file.path(newfoName), recursive = TRUE, showWarnings=FALSE)
-      output <- file(description = generateFileName(newfoName, "result", idx = NULL, g, n, ".txt"), open = "w") # wa - write append
-      outputTerminal <- file(description = generateFileName(newfoName, "resultTerminal", idx = NULL, g, n, ".txt"), open = "w")
+      expResult <- tryCatch(
+        {
+          print(paste("START: at gamma", g, "nu", n, "time", toString(Sys.time())))
+          # nu = 0.1 lub mniejsze powinno działać zawsze
+          # im niższe nu, tym większa jest tolerancja na błędy -> gorsze wyniki,
+          # jak predykcja całego zbioru jako fałszywego
+          tmp <- randomize_kfold(dataset, N)
+          randData <- tmp[[1]]
+          folds <- tmp[[2]]
 
-      for(idx in 1:N){
-        fetchedData <- kfold_cv(folds, randData, idx)
-        testD <- fetchedData[[1]]
-        trainD <- fetchedData[[2]]
+          newfoName <- getSVMFolderName(foName, g, n)
+          dir.create(file.path(newfoName), recursive = TRUE, showWarnings=FALSE)
+          output <- file(description = generateFileName(newfoName, "result", idx = NULL, g, n, ".txt"), open = "w") # wa - write append
+          outputTerminal <- file(description = generateFileName(newfoName, "resultTerminal", idx = NULL, g, n, ".txt"), open = "w")
 
-        # create SVM
-        svmPedictor <- svmObj(trainD, g, n)
-        prediction <- predict(svmPedictor, testD)
-        rocObj <- getROC(testD, prediction)
+          for(idx in 1:N){
+            fetchedData <- kfold_cv(folds, randData, idx)
+            testD <- fetchedData[[1]]
+            trainD <- fetchedData[[2]]
 
-        png(generateFileName(newfoName, "roc", idx, g, n, ".png"))
-        plot(
-          rocObj,
-          col = "#619e39",
-          lwd = 3,
-          main = paste("SVM ", "gamma: ", g, "nu: ", n)
-        )
-        dev.off()
+            # create SVM
+            svmPedictor <- svmObj(trainD, g, n)
+            prediction <- predict(svmPedictor, testD)
+            rocObj <- getROC(testD, prediction)
 
-        png(generateFileName(newfoName, "AUC_PR", idx, g, n, ".png"))
-        plot(
-          rocObj,
-          col = "#619e39",
-          lwd = 3,
-          main = paste("AUC PR ", "gamma: ", g, "nu: ", n)
-        )
-        dev.off()
+            png(generateFileName(newfoName, "roc", idx, g, n, ".png"))
+            plot(
+              rocObj,
+              col = "#619e39",
+              lwd = 3,
+              main = paste("SVM ", "gamma: ", g, "nu: ", n)
+            )
+            dev.off()
 
-        matrix <- (confusionMatrix(as.factor(prediction), as.factor(testD$Class)))
-        mpos <- matrix$positive
-        mtab <- t(matrix$table)
-        moverall <- t(matrix$overall)
-        mclass <- t(matrix$byClass)
+            png(generateFileName(newfoName, "AUC_PR", idx, g, n, ".png"))
+            plot(
+              rocObj,
+              col = "#619e39",
+              lwd = 3,
+              main = paste("AUC PR ", "gamma: ", g, "nu: ", n)
+            )
+            dev.off()
 
-        writeCapturedOutput(matrix, file=outputTerminal)
+            matrix <- (confusionMatrix(as.factor(prediction), as.factor(testD$Class)))
+            mpos <- matrix$positive
+            mtab <- t(matrix$table)
+            moverall <- t(matrix$overall)
+            mclass <- t(matrix$byClass)
 
-        writeString(output, "confusion matrix:")
-        writeString(output, paste("Positive,", toString(mpos)))
-        writeCsv(output, mtab)
-        writeCsv(output, moverall)
-        writeCsv(output, mclass)
-        writeString(output, "\n")
+            writeCapturedOutput(matrix, file=outputTerminal)
 
-        svmPrecision <- precision(as.factor(prediction), as.factor(testD$Class))
+            writeString(output, "confusion matrix:")
+            writeString(output, paste("Positive,", toString(mpos)))
+            writeCsv(output, mtab)
+            writeCsv(output, moverall)
+            writeCsv(output, mclass)
+            writeString(output, "\n")
 
-        writeString(output, "precision:")
-        writeString(output, toString(svmPrecision))
-        writeString(output, "\n")
+            svmPrecision <- precision(as.factor(prediction), as.factor(testD$Class))
 
-        svmRecall <- recall(as.factor(prediction), as.factor(testD$Class))
-        writeString(output, "recall:")
-        writeString(output, toString(svmRecall))
-        writeString(output, "\n")
+            writeString(output, "precision:")
+            writeString(output, toString(svmPrecision))
+            writeString(output, "\n")
 
-        f1_score <- (svmPrecision * svmRecall) / (svmPrecision + svmRecall)
-        writeString(output, "f1 score:")
-        writeString(output, toString(f1_score))
-        writeString(output, "\n")
+            svmRecall <- recall(as.factor(prediction), as.factor(testD$Class))
+            writeString(output, "recall:")
+            writeString(output, toString(svmRecall))
+            writeString(output, "\n")
 
-        aucScore <- auc(rocObj)
-        writeString(output, "AUC:")
-        writeString(output, toString(aucScore))
-        writeString(output, "\n")
+            f1_score <- (svmPrecision * svmRecall) / (svmPrecision + svmRecall)
+            writeString(output, "f1 score:")
+            writeString(output, toString(f1_score))
+            writeString(output, "\n")
 
-      }
-      close(output)
-      close(outputTerminal)
+            aucScore <- auc(rocObj)
+            writeString(output, "AUC:")
+            writeString(output, toString(aucScore))
+            writeString(output, "\n")
+
+          }
+        
+            close(output)
+            close(outputTerminal)
+        },
+        error=function(cond){
+          print(paste("ERROR: at gamma", toString(g), "nu", toString(n), "time", toString(Sys.time())))
+        },
+        warning=function(cond){
+          print(paste("WARNING: at gamma", toString(g), "nu", toString(n), "time", toString(Sys.time())))
+        },
+        finally={
+          print(paste("END: at gamma", g, "nu", n, "time", toString(Sys.time())))
+        })
     }
   }
   
