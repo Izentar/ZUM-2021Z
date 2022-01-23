@@ -1,5 +1,5 @@
 
-sink(file = "output.log.txt")
+sink(file = "output.log.txt", append=TRUE)
 
 source(here::here('scripts', 'utils.R'))
 loadPackages()
@@ -26,8 +26,8 @@ dataSet <-  smotefamily::SMOTE(dataSet[, -31], dataSet$Class, K = 5)$data
 #getSummary("out.csv", dataSet)
 # summary(dataSet)
  
-tmp <- 
-experimentSVM(dataSet, newSVMTwoC, folderName='outTest', gamma=list(0.5), nu=list(0.9999, 0.15))
+tmp <- experimentSVM(dataSet, newSVMTwoC, folderName='outTest', gamma=list(8, 4, 2, 1, 0.5, 0.01, 0.001, 0.0001), nu=list(0.5, 0.3, 0.15, 0.1, 0.05, 0.01))
+tmp2 <- experimentSVM(dataSet, newSVMOneC, folderName='outTest', gamma=list(8, 4, 2, 1, 0.5, 0.01, 0.001, 0.0001), nu=list(0.5, 0.3, 0.15, 0.1, 0.05, 0.01))
 
 #svm <- newSVMOneC(x=dataSet, y=unlist(labels(dataSet)[2]), gamma=0.5, nu=0.5)
 #svm <- newSVMOneC(dataSet, gamma=0.5, nu=0.5)

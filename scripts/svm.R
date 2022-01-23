@@ -82,10 +82,11 @@ experimentSVM <- function(dataset, svmObj, folderName, N=5, gamma = list(), nu =
               main = paste("SVM ", "gamma: ", g, "nu: ", n)
             )
             dev.off()
-
+#
+            aucprObj <- getAUPRC(testD, prediction)
             png(generateFileName(newfoName, "AUC_PR", idx, g, n, ".png"))
             plot(
-              rocObj,
+              aucprObj,
               col = "#619e39",
               lwd = 3,
               main = paste("AUC PR ", "gamma: ", g, "nu: ", n)
@@ -134,10 +135,12 @@ experimentSVM <- function(dataset, svmObj, folderName, N=5, gamma = list(), nu =
             close(outputTerminal)
         },
         error=function(cond){
-          print(paste("ERROR: at gamma", toString(g), "nu", toString(n), "time", toString(Sys.time())))
+          print(paste("ERROR: at gamma", toString(g), "nu", toString(n), "time", toString(Sys.time()), 
+            "Message:", toString(cond)))
         },
         warning=function(cond){
-          print(paste("WARNING: at gamma", toString(g), "nu", toString(n), "time", toString(Sys.time())))
+          print(paste("WARNING: at gamma", toString(g), "nu", toString(n), "time", toString(Sys.time()), 
+            "Message:", toString(cond)))
         },
         finally={
           print(paste("END: at gamma", g, "nu", n, "time", toString(Sys.time())))
