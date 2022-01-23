@@ -40,7 +40,7 @@ getSVMFolderName <- function(path, g, n){
 # uwaga, przed podaniem dataset należy go obrobić zgodnie z przekazanym typem w svmObj
 # jeżeli jest Two, to można pozostawić bez zmian
 # jeżeli jest One, to trzeba wybrać względem której klasy chcemy nauczyć SVM
-experimentSVM <- function(dataset, svmObj, folderName, N=5, gamma = list(), nu = list()){
+experimentSVM <- function(dataset, svmObj, folderName, addValidDataset = NULL, N=5, gamma = list(), nu = list()){
   osSep <- osGetPathSlash()
 
   foName <- folderName
@@ -55,7 +55,8 @@ experimentSVM <- function(dataset, svmObj, folderName, N=5, gamma = list(), nu =
           # nu = 0.1 lub mniejsze powinno działać zawsze
           # im niższe nu, tym większa jest tolerancja na błędy -> gorsze wyniki,
           # jak predykcja całego zbioru jako fałszywego
-          tmp <- randomize_kfold(dataset, N)
+          newDataset <- dataset
+          tmp <- randomize_kfold(newDataset, N)
           randData <- tmp[[1]]
           folds <- tmp[[2]]
 
@@ -68,6 +69,11 @@ experimentSVM <- function(dataset, svmObj, folderName, N=5, gamma = list(), nu =
             fetchedData <- kfold_cv(folds, randData, idx)
             testD <- fetchedData[[1]]
             trainD <- fetchedData[[2]]
+
+            if(! is.null(addValidDataset)){
+              testD <- concatenateDatasets(testD, addValidDataset)
+            }
+            
 
             # create SVM
             svmPedictor <- svmObj(trainD, g, n)

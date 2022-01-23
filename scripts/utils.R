@@ -41,7 +41,7 @@ terminate <- function(clearConsole = TRUE, restart=FALSE) {
   }
 }
 
-divideDataset <- function(dataSet, randSample = TRUE){
+divideDataset <- function(dataSet){
   zero <- dataSet[dataSet$Class == "0", ]
   zero <- zero[sample(nrow(zero)), ]
   one <- dataSet[dataSet$Class == "1", ]
@@ -50,15 +50,19 @@ divideDataset <- function(dataSet, randSample = TRUE){
   return(list(zero, one))
 }
 
+# przetestowane
 sampleDataset <- function(dataSet, N){
   tmp <- dataSet[sample(nrow(dataSet)), ]
-  return(tmp[1:N, ])
+  #return(list(tmp[1:N, ], tail(tmp, nrow(tmp) - N)))
+  return(list(tmp[1:N, ], tmp[-(1:N), ]))
 }
 
+# przetestowane
 concatenateDatasets <- function(d1, d2){
   return(rbind(d1, d2))
 }
 
+# przetestowane
 compareDatasets <- function(d1, d2){
   return(setdiff(d1, d2))
 }
