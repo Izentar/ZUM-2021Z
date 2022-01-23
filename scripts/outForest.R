@@ -1,3 +1,7 @@
+getoutForestFolder <- function(path, N, max_n_outliers="default", min_node_size="default"){
+  return(paste(path, osGetPathSlash(), N, "max_n_outliers_",max_n_outliers , "_min_node_size_ ", min_node_size, osGetPathSlash(), sep=""))
+}
+
 
 stratified_sampling <- function(proportion, rows_number, dataset) {
   zero <- dataSet[dataSet$Class == "0",]
@@ -11,51 +15,89 @@ stratified_sampling <- function(proportion, rows_number, dataset) {
 }
 
 
-runOutForest <- function(dataSet) {
+runOutForest <- function(dataSet, extra_validation=NULL) {
   
   dataSet <- stratified_sampling(0.6, 200, dataSet)
   N = 5
   tmp <- randomize_kfold(dataSet,N)
   randData <- tmp[[1]]
   folds <- tmp[[2]]
-  
-  #print(dataSet[dataSet$Class == "0", ])
+  foName <- "outForest"
 
   for (i in 1:N) {
-    for (max_n_outliers in seq(2, 200, by = 50)) {
-      for (min_node_size in seq (2, 200, by= 40)) {
+    for (max_n_outliers in seq(2, 100, by = 50)) {
+      for (min_node_size in seq (2, 100, by= 40)) {
+    newfoName <- getoutForestFolder(foName,i,max_n_outliers = toString(max_n_outliers),min_node_size=toString(min_node_size) )
+    dir.create(file.path(newfoName), recursive = TRUE, showWarnings=FALSE)
+    
+    output <- file(description = paste(newfoName, "_notes.txt"), open = "w") # wa - write append
+    
+    dir.create(file.path(newfoName), recursive = TRUE, showWarnings=FALSE)
+        
     data <- kfold_cv(folds, randData, i)
     testData <- data[[1]]
     testData$Class <- as.factor(testData$Class)
+    
+    if(! is.null(extra_validation)){
+      testData <- concatenateDatasets(testData, extra_validation)
+    }
+    
     trainData <- data[[2]]
     trainData$Class <- as.factor(trainData$Class)
     classifier <- outForest(trainData,max_n_outliers =max_n_outliers, allow_predictions=TRUE)
-
+  
     prediction <- predict(classifier, newdata  = testData)
     outli <- outliers(prediction)
     tmptestData <- testData
-    #tmptestData$Class <- as.integer(tmptestData$Class)
 
     tmptestData$Class[c(outli$row) ] <- 1
 
-    #stop("S")
     ROC <- roc(tmptestData$Class, factor(testData$Class, ordered = TRUE))
-    auc <- auc(ROC)
     
+    matrix <- confusionMatrix(as.factor(tmptestData$Class), as.factor(testData$Class))
+    writeCapturedOutput(matrix, file=paste(newfoName, "confusionMatrix.txt"))
+    
+    
+    svmPrecision <- precision(as.factor(tmptestData$Class), as.factor(testData$Class))
+    
+    writeString(output, "precision:")
+    writeString(output, toString(svmPrecision))
+    writeString(output, "\n")
+    
+    svmRecall <- recall(as.factor(tmptestData$Class), as.factor(testData$Class))
+    writeString(output, "recall:")
+    writeString(output, toString(svmRecall))
+    writeString(output, "\n")
+    
+    f1_score <- (svmPrecision * svmRecall) / (svmPrecision + svmRecall)
+    writeString(output, "f1 score:")
+    writeString(output, toString(f1_score))
+    writeString(output, "\n")
+    
+    auc <- auc(ROC)
+    writeString(output, "AUC:")
+    writeString(output, toString(auc))
+    writeString(output, "\n")
+    
+    
+    png(paste(newfoName, "roc", ".png"))
     plot(
       ROC,
       col = "red",
       lwd = 3,
       main =  paste("outForest ", "max_n_outliers: ", max_n_outliers,"min_node_size: ", min_node_size  )
     )
-    print("testData")
-    print(testData$Class)
     
-    print("tmptestData")
-    print(tmptestData$Class)
+    dev.off()
+    
+    png(paste(newfoName, "auprc", ".png"))
     plot_AUPRC(testData,
                tmptestData$Class,
                paste("outForest ", "max_n_outliers: ", max_n_outliers,"min_node_size: ", min_node_size  ))
+    
+    dev.off()
+    
+    close(output)
 
     }
   }
