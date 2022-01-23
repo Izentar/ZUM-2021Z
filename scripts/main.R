@@ -28,7 +28,9 @@ model <- randomForest(factor(Class)~., data=dataSet,  importance = TRUE)
 
 importance(model)
 varImpPlot(model)
-#importance <- randomForest::varImpPlot(model)
+
+dataSet = subset(dataSet, select = -c(V15,V7, V18, V8, V1, V5, V2, V28, V25, V23, V27))
+
 
 
 run_plots(dataSet, "_unbalanced")
