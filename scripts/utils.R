@@ -63,12 +63,17 @@ compareDatasets <- function(d1, d2){
   return(setdiff(d1, d2))
 }
 
+# przetestowana
 randomize_kfold <- function (dataSet, N) {
   dataTmp <- dataSet[sample(nrow(dataSet)), ]
   
+  if(N < 1){
+    stop(paste("Bad numer of folds in k-folds:", N))
+  }
   list(dataTmp, cut(seq(1, nrow(dataTmp)), breaks = N, labels = FALSE))
 }
 
+# przetestowana
 kfold_cv <- function(folds, dataSet, i) {
   testIndexes <- which(folds == i, arr.ind = TRUE)
   testData <- dataSet[testIndexes,]

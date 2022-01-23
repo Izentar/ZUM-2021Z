@@ -10,7 +10,7 @@ set.seed(93274)
 #
 #
 
-dataSet <- prepareData(TRUE)
+dataSet <- prepareData(TRUE, TRUE)
 
 
 data(iris)

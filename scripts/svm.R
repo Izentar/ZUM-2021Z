@@ -28,7 +28,7 @@ generateFileName <- function(path, prefixName, idx = NULL, g, n, suffixName){
     return(paste(path, osGetPathSlash(), prefixName, '_',
     "gamma_", as.character(g), "_" , "nu_", as.character(n), suffixName, sep = ""))
   }
-  return(paste(path, osGetPathSlash(), prefixName, '_', "idx_", as.character(idx), 
+  return(paste(path, osGetPathSlash(), prefixName, '_', "idx_", as.character(idx), "_",
     "gamma_", as.character(g), "_" , "nu_", as.character(n), suffixName, sep = ""))
 }
 
@@ -60,7 +60,7 @@ experimentSVM <- function(dataset, svmObj, folderName, N=5, gamma = list(), nu =
       output <- file(description = generateFileName(newfoName, "result", idx = NULL, g, n, ".txt"), open = "w") # wa - write append
       outputTerminal <- file(description = generateFileName(newfoName, "resultTerminal", idx = NULL, g, n, ".txt"), open = "w")
 
-      for(idx in N){
+      for(idx in 1:N){
         fetchedData <- kfold_cv(folds, randData, idx)
         testD <- fetchedData[[1]]
         trainD <- fetchedData[[2]]
@@ -70,7 +70,7 @@ experimentSVM <- function(dataset, svmObj, folderName, N=5, gamma = list(), nu =
         prediction <- predict(svmPedictor, testD)
         rocObj <- getROC(testD, prediction)
 
-        png(generateFileName(newfoName, "roc_", idx, g, n, ".png"))
+        png(generateFileName(newfoName, "roc", idx, g, n, ".png"))
         plot(
           rocObj,
           col = "#619e39",
@@ -79,7 +79,7 @@ experimentSVM <- function(dataset, svmObj, folderName, N=5, gamma = list(), nu =
         )
         dev.off()
 
-        png(generateFileName(newfoName, "AUC_PR_", idx, g, n, ".png"))
+        png(generateFileName(newfoName, "AUC_PR", idx, g, n, ".png"))
         plot(
           rocObj,
           col = "#619e39",

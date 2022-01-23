@@ -1,10 +1,15 @@
 library(datasets)
 pacman::p_load(pacman)
 
-prepareData <- function(example = FALSE) {
+prepareData <- function(example = FALSE, tiny = FALSE) {
   dataset <- NULL
   if (example) {
-    dataset <- read.table("data/creditcardtest.txt", header = TRUE, sep = ",")
+    if(tiny){
+      dataset <- read.table("data/creditcardtiny.txt", header = TRUE, sep = ",")
+    }
+    else{
+      dataset <- read.table("data/creditcardtest.txt", header = TRUE, sep = ",")
+    }
   }
   else{
     dataset <- read.table("data/creditcard.txt", header = TRUE, sep = ",")
