@@ -24,8 +24,8 @@ stratified_sampling <- function(proportion, rows_number, dataset) {
   one <- dataSet[dataSet$Class == "1",]
   
   
-  one_samples <- sample_n(one, proportion * rows_number)
-  zero_samples <- sample_n(zero, (1 - proportion) * rows_number)
+  one_samples <- sample_n(one, proportion * rows_number, replace = TRUE)
+  zero_samples <- sample_n(zero, (1 - proportion) * rows_number, replace = TRUE)
   
   rbind(zero_samples, one_samples)
 }
@@ -38,9 +38,9 @@ runOutForest <-
            extra_validation = NULL,
            max_n_outliers_list =  list(),
            min_node_size_list =list()) {
-    dataSet <- stratified_sampling(0.6, 200, dataSet)
+    dataSet <- stratified_sampling(0.6, 5000, dataSet)
 
-    foName <- "outForest"
+    foName <- "outForest_2"
     
     
     for (max_n_outliers in max_n_outliers_list) {
