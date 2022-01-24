@@ -16,7 +16,7 @@
 
 
 newSVMOneC <- function(data, gamma, nu){
-  return(svm(Class ~ ., data = data, type='one-classification', kernel='radial', gamma=gamma, nu=nu))
+  return(svm(as.logical(as.integer(Class)) ~ ., data = data, type='one-classification', kernel='radial', gamma=gamma, nu=nu))
 }
 
 newSVMTwoC <- function(data, gamma, nu){
@@ -101,7 +101,8 @@ experimentSVM <- function(dataset, svmObj, folderName, addValidDataset = NULL, N
             )
             dev.off()
 
-            matrix <- (confusionMatrix(as.factor(prediction), as.factor(testD$Class)))
+            matrix <- (confusionMatrix(as.factor(prediction), as.factor(as.logical(as.integer(testD$Class)))
+              ))
             mpos <- matrix$positive
             mtab <- t(matrix$table)
             moverall <- t(matrix$overall)
@@ -116,13 +117,15 @@ experimentSVM <- function(dataset, svmObj, folderName, addValidDataset = NULL, N
             writeCsv(output, mclass)
             writeString(output, "\n")
 
-            svmPrecision <- precision(as.factor(prediction), as.factor(testD$Class))
+            svmPrecision <- precision(as.factor(prediction), as.factor(as.logical(as.integer(testD$Class)))
+              )
 
             writeString(output, "precision:")
             writeString(output, toString(svmPrecision))
             writeString(output, "\n")
 
-            svmRecall <- recall(as.factor(prediction), as.factor(testD$Class))
+            svmRecall <- recall(as.factor(prediction), as.factor(as.logical(as.integer(testD$Class)))
+              )
             writeString(output, "recall:")
             writeString(output, toString(svmRecall))
             writeString(output, "\n")
