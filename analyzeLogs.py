@@ -136,8 +136,9 @@ def readL(key, pos, line, data, ignore = None):
         for i in ignore:
             if(i in tmp):
                 return
-    if(key in tmp):
+    if(key in line):
         data.add(key, float(tmp[pos]))
+
 
 def readFileDom(filePath):
     index = 0
@@ -177,7 +178,7 @@ def readFileDom(filePath):
                 data.add('95% CI Low', float(tmp[3].replace('(', '')))
                 data.add('95% CI High', float(tmp[4].replace(')', '')))
             readL('No Information Rate', 4, l, data)
-            readL('P-Value [Acc > NIR]', 6, l, data)
+            readL('P-Value [Acc > NIR]', 5, l, data)
             readL('Kappa', 2, l, data)
             readL('Mcnemars Test P-Value', 4, l, data)
             readL('Sensitivity', 2, l, data)
@@ -228,6 +229,6 @@ def travelDirs(root):
 #data = readFile('outOne/gamma_0.01/nu_0.01/result_gamma_0.01_nu_0.01.txt')
 #data.getAvg()
 
-travelDirs('./outTwo')
+travelDirs('./test/outForest')
 
 
