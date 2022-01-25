@@ -101,7 +101,17 @@ experimentSVM <- function(dataset, svmObj, folderName, addValidDataset = NULL, N
             )
             dev.off()
 
-            matrix <- (confusionMatrix(as.factor(prediction), as.factor(as.logical(as.integer(testD$Class)))
+            convertedClass <- as.factor(type.convert(testD$Class))
+
+            convertPred <- NULL
+            if(typeof(prediction) == 'logical'){
+              convertPred <- as.factor(as.numeric(prediction))
+            }
+            else{
+              convertPred <- as.factor(as.numeric(prediction) - 1)
+            }
+
+            matrix <- (confusionMatrix(convertPred, convertedClass
               ))
             mpos <- matrix$positive
             mtab <- t(matrix$table)
@@ -117,14 +127,14 @@ experimentSVM <- function(dataset, svmObj, folderName, addValidDataset = NULL, N
             writeCsv(output, mclass)
             writeString(output, "\n")
 
-            svmPrecision <- precision(as.factor(prediction), as.factor(as.logical(as.integer(testD$Class)))
+            svmPrecision <- precision(convertPred, convertedClass
               )
 
             writeString(output, "precision:")
             writeString(output, toString(svmPrecision))
             writeString(output, "\n")
 
-            svmRecall <- recall(as.factor(prediction), as.factor(as.logical(as.integer(testD$Class)))
+            svmRecall <- recall(convertPred, convertedClass
               )
             writeString(output, "recall:")
             writeString(output, toString(svmRecall))
