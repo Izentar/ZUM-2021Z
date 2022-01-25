@@ -2,8 +2,6 @@
 # e1071
 
 #'
-#'x - wejście - dane w postaci macierzy
-#'y - wyjście - wektor zawierający etykiety, które model potrafi przewidzieć
 #'
 #'
 #'type:
@@ -40,6 +38,7 @@ getSVMFolderName <- function(path, g, n){
 # uwaga, przed podaniem dataset należy go obrobić zgodnie z przekazanym typem w svmObj
 # jeżeli jest Two, to można pozostawić bez zmian
 # jeżeli jest One, to trzeba wybrać względem której klasy chcemy nauczyć SVM
+# addValidDataset - dodatkowy zbiór walidacyjny, nie biorący udziału w treningu
 experimentSVM <- function(dataset, svmObj, folderName, addValidDataset = NULL, N=5, gamma = list(), nu = list()){
   osSep <- osGetPathSlash()
 
@@ -90,7 +89,7 @@ experimentSVM <- function(dataset, svmObj, folderName, addValidDataset = NULL, N
               main = paste("SVM ", "gamma: ", g, "nu: ", n)
             )
             dev.off()
-#
+
             aucprObj <- getAUPRC(testD, prediction)
             png(generateFileName(newfoName, "AUC_PR", idx, g, n, ".png"))
             plot(

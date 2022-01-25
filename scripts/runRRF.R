@@ -56,18 +56,7 @@ runRRF <- function(dataSet,
             trainData$Class <- as.factor(trainData$Class)
             
 
-            print(
-              paste(
-                "START: at ntree",
-                ntree,
-                "mtry",
-                mtry,
-                "maxnodes",
-                maxnodes,
-                "time",
-                toString(Sys.time())
-              )
-            )
+            print(paste("START: at ntree", ntree, "mtry", mtry, "maxnodes", maxnodes,"time",toString(Sys.time())))
             
             newfoName <-
               getRRFFolder(foName,

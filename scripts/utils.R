@@ -110,24 +110,8 @@ getAUPRC <- function(testData, predicted) {
   return(pr)
 }
 
-#getROC <- function(testData, predicted) {
-#  fg <- predicted[testData$Class == 1]
-#  bg <- predicted[testData$Class == 0]
-#  if(length(fg) == 0 || length(bg) == 0){
-#    stop("getROC lenght 0")
-#  }
-#
-#  pr <- roc.curve(scores.class0 = fg,
-#                 scores.class1 = bg,
-#                 curve = T, response=testData$Class, predicted=)
-#  return(pr)
-#}
-
 
 getROC <- function(dataUsedInPred, prediction){
-  #print(dataUsedInPred)
-  #print(prediction)
-  #stop("STOP")
   return(roc(prediction, factor(dataUsedInPred$Class, ordered = TRUE)))
 }
 
